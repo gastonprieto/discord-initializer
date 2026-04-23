@@ -29,4 +29,9 @@ describe('checkBotPermissions', () => {
     const missing = checkBotPermissions(guild, ['KickMembers', 'ManageRoles', 'ManageChannels']);
     expect(missing).toHaveLength(0);
   });
+
+  it('throws when an unknown permission name is passed', () => {
+    const guild = makeGuild(0n);
+    expect(() => checkBotPermissions(guild, ['InvalidPerm'])).toThrow('Permiso desconocido: InvalidPerm');
+  });
 });
