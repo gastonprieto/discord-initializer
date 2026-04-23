@@ -59,5 +59,6 @@ describe('getChannelsToDelete', () => {
     const guild = { channels: { cache: new Map(channels.map(c => [c.id, c])) } };
     const result = getChannelsToDelete(guild);
     expect(result).toHaveLength(2);
+    expect(result.map(c => c.id).sort()).toEqual(['1', '2']);
   });
 });
