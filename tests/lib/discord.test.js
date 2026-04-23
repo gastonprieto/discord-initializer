@@ -56,9 +56,30 @@ describe('getChannelsToDelete', () => {
       { id: '1', name: 'general', type: 0 },
       { id: '2', name: 'Diseño', type: 4 },
     ];
-    const guild = { channels: { cache: new Map(channels.map(c => [c.id, c])) } };
+    const guild = {
+      systemChannelId: null,
+      rulesChannelId: null,
+      publicUpdatesChannelId: null,
+      channels: { cache: new Map(channels.map(c => [c.id, c])) },
+    };
     const result = getChannelsToDelete(guild);
     expect(result).toHaveLength(2);
     expect(result.map(c => c.id).sort()).toEqual(['1', '2']);
+  });
+
+  it('excludes system channels', () => {
+    const channels = [
+      { id: 'sys', name: 'system', type: 0 },
+      { id: '1', name: 'general', type: 0 },
+    ];
+    const guild = {
+      systemChannelId: 'sys',
+      rulesChannelId: null,
+      publicUpdatesChannelId: null,
+      channels: { cache: new Map(channels.map(c => [c.id, c])) },
+    };
+    const result = getChannelsToDelete(guild);
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe('1');
   });
 });

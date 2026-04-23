@@ -5,10 +5,13 @@ const { checkBotPermissions } = require('./lib/permissions');
 
 const isDryRun = process.argv.includes('--dry-run');
 
+let client;
+
 async function main() {
   if (isDryRun) console.log('[DRY RUN] No changes will be made.\n');
 
-  const { client, guild } = await connectAndFetch();
+  const { client: c, guild } = await connectAndFetch();
+  client = c;
   const members = [...guild.members.cache.values()];
 
   const missingPerms = checkBotPermissions(guild, ['KickMembers', 'ManageRoles', 'ManageChannels']);
@@ -74,5 +77,6 @@ async function main() {
 
 main().catch(err => {
   console.error('Error fatal:', err.message);
+  if (client) client.destroy();
   process.exit(1);
 });
