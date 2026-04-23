@@ -6,10 +6,13 @@ const { checkBotPermissions } = require('./lib/permissions');
 
 const isDryRun = process.argv.includes('--dry-run');
 
+let client;
+
 async function main() {
   if (isDryRun) console.log('[DRY RUN] No changes will be made.\n');
 
-  const { client, guild } = await connectAndFetch();
+  const { client: c, guild } = await connectAndFetch();
+  client = c;
   const members = [...guild.members.cache.values()];
 
   const missingPerms = checkBotPermissions(guild, ['ManageRoles', 'ManageChannels']);
@@ -109,6 +112,7 @@ async function main() {
   for (let i = 0; i < teamCount; i++) {
     const teamRole = createdRoles[teamNames[i]];
     const overwrites = [
+      { id: everyoneRole.id, deny: [PermissionsBitField.Flags.ViewChannel] },
       { id: teamRole.id, allow: [PermissionsBitField.Flags.ViewChannel] },
     ];
 
@@ -139,5 +143,6 @@ async function main() {
 
 main().catch(err => {
   console.error('Error fatal:', err.message);
+  if (client) client.destroy();
   process.exit(1);
 });
