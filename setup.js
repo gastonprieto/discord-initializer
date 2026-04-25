@@ -63,7 +63,6 @@ async function main() {
 
   console.log(`\nSe creará la siguiente estructura:`);
   console.log(`  Categoría: ${categoryName}`);
-  console.log(`  Canal: lobby (texto, visible para todos)`);
   teamChannelNames.forEach((ch, i) => {
     const types = channelType === 'both' ? 'texto + voz' : channelType === 'voice' ? 'voz' : 'texto';
     console.log(`  Canal: ${ch} (${types}, solo ${teamNames[i]})`);
@@ -96,17 +95,6 @@ async function main() {
     ],
   });
   console.log(`Categoría creada: ${categoryName}`);
-
-  // Create lobby — visible to everyone (override the category deny)
-  await guild.channels.create({
-    name: 'lobby',
-    type: ChannelType.GuildText,
-    parent: category.id,
-    permissionOverwrites: [
-      { id: everyoneRole.id, allow: [PermissionsBitField.Flags.ViewChannel] },
-    ],
-  });
-  console.log('Canal creado: lobby');
 
   // Create team channels
   for (let i = 0; i < teamCount; i++) {

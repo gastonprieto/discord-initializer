@@ -1,5 +1,6 @@
 require('dotenv').config();
 const { confirm } = require('@inquirer/prompts');
+const { ChannelType } = require('discord.js');
 const { connectAndFetch, getMembersToKick, getRolesToDelete, getChannelsToDelete } = require('./lib/discord');
 const { checkBotPermissions } = require('./lib/permissions');
 
@@ -31,6 +32,7 @@ async function main() {
   toDeleteRoles.forEach(r => console.log(`  - ${r.name}`));
   console.log(`Canales/categorías a eliminar: ${toDeleteChannels.length}`);
   toDeleteChannels.forEach(c => console.log(`  - ${c.name}`));
+  console.log('Canal a crear: lobby');
 
   if (isDryRun) {
     client.destroy();
@@ -70,6 +72,12 @@ async function main() {
       console.error(`Error al eliminar rol ${role.name}: ${err.message}`);
     }
   }
+
+  await guild.channels.create({
+    name: 'lobby',
+    type: ChannelType.GuildText,
+  });
+  console.log('Canal creado: lobby');
 
   console.log('\nLimpieza completa.');
   client.destroy();
