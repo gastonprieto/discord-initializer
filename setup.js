@@ -58,7 +58,8 @@ async function main() {
     default: 'text',
   });
 
-  const categoryName = `${course}-${docente.displayName}`;
+  const firstName = docente.displayName.split(' ')[0];
+  const categoryName = `${course}-${firstName}`;
   const teamNames = Array.from({ length: teamCount }, (_, i) => `equipo-${i + 1}`);
   const teamChannelNames = teamNames;
 
@@ -95,6 +96,7 @@ async function main() {
     type: ChannelType.GuildCategory,
     permissionOverwrites: [
       { id: everyoneRole.id, deny: [PermissionsBitField.Flags.ViewChannel] },
+      { id: guild.members.me.id, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.ManageChannels] },
       ...(docentesRole ? [{ id: docentesRole.id, allow: [PermissionsBitField.Flags.ViewChannel] }] : []),
     ],
   });
