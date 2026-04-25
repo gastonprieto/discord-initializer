@@ -57,7 +57,10 @@ async function main() {
     }
   }
 
-  for (const channel of toDeleteChannels) {
+  const categories = toDeleteChannels.filter(c => c.type === ChannelType.GuildCategory);
+  const nonCategories = toDeleteChannels.filter(c => c.type !== ChannelType.GuildCategory);
+
+  for (const channel of [...nonCategories, ...categories]) {
     try {
       debug(`Eliminando canal ${channel.name} (${channel.id})...`);
       await channel.delete();
