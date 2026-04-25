@@ -16,7 +16,7 @@ async function main() {
   client = c;
   const members = [...guild.members.cache.values()];
 
-  const missingPerms = checkBotPermissions(guild, ['KickMembers', 'ManageRoles', 'ManageChannels']);
+  const missingPerms = checkBotPermissions(guild, ['KickMembers', 'ManageRoles', 'ManageChannels', 'SendMessages', 'PinMessages']);
   if (missingPerms.length > 0) {
     console.error(`El bot no tiene los permisos necesarios: ${missingPerms.join(', ')}`);
     client.destroy();
@@ -95,8 +95,13 @@ async function main() {
     'En cuanto lo hagas, te asignamos el rol y ya podés ver los canales de tu equipo. ✅\n\n' +
     '¡Cualquier duda, no dudes en preguntar acá! 😊'
   );
-  await welcomeMessage.pin();
-  console.log('Mensaje de bienvenida enviado y pinneado en lobby.');
+  console.log('Mensaje de bienvenida enviado en lobby.');
+  try {
+    await welcomeMessage.pin();
+    console.log('Mensaje pinneado en lobby.');
+  } catch (err) {
+    console.error(`No se pudo pinnear el mensaje: ${err.message}`);
+  }
 
   console.log('\nLimpieza completa.');
   client.destroy();

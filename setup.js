@@ -59,8 +59,8 @@ async function main() {
   });
 
   const categoryName = `${course}-${docente.displayName}`;
-  const teamNames = Array.from({ length: teamCount }, (_, i) => `Equipo ${i + 1}`);
-  const teamChannelNames = Array.from({ length: teamCount }, (_, i) => `equipo-${i + 1}`);
+  const teamNames = Array.from({ length: teamCount }, (_, i) => `equipo-${i + 1}`);
+  const teamChannelNames = teamNames;
 
   console.log(`\nSe creará la siguiente estructura:`);
   console.log(`  Categoría: ${categoryName}`);
