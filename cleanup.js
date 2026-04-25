@@ -78,11 +78,25 @@ async function main() {
   }
 
   debug('Creando canal lobby...');
-  await guild.channels.create({
+  const lobby = await guild.channels.create({
     name: 'lobby',
     type: ChannelType.GuildText,
   });
   console.log('Canal creado: lobby');
+
+  const welcomeMessage = await lobby.send(
+    '👋 **¡Bienvenido/a al servidor!**\n\n' +
+    'Para que podamos darte acceso a los canales de tu equipo, seguí estos dos pasos:\n\n' +
+    '**1️⃣ Cambiá tu alias** en este servidor a tu **nombre y apellido completo**\n' +
+    '*(clic derecho en tu nombre → Editar apodo del servidor)*\n\n' +
+    '**2️⃣ Escribí en este canal:**\n' +
+    '> `materia - grupo - listo`\n' +
+    '> *Ejemplo: `Diseño - Equipo 3 - listo`*\n\n' +
+    'En cuanto lo hagas, te asignamos el rol y ya podés ver los canales de tu equipo. ✅\n\n' +
+    '¡Cualquier duda, no dudes en preguntar acá! 😊'
+  );
+  await welcomeMessage.pin();
+  console.log('Mensaje de bienvenida enviado y pinneado en lobby.');
 
   console.log('\nLimpieza completa.');
   client.destroy();
