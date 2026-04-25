@@ -16,7 +16,7 @@ async function main() {
   client = c;
   const members = [...guild.members.cache.values()];
 
-  const missingPerms = checkBotPermissions(guild, ['KickMembers', 'ManageRoles', 'ManageChannels', 'SendMessages', 'PinMessages']);
+  const missingPerms = checkBotPermissions(guild, ['Administrator']);
   if (missingPerms.length > 0) {
     console.error(`El bot no tiene los permisos necesarios: ${missingPerms.join(', ')}`);
     client.destroy();

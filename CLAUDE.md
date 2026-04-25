@@ -25,6 +25,23 @@ Two standalone CLI scripts share a common library. Neither runs as a persistent 
 
 **`lib/permissions.js`** — `checkBotPermissions(guild, permNames[])` takes permission names as strings (e.g. `'KickMembers'`), validates they exist in `PermissionsBitField.Flags` (throws on typo), and returns the subset the bot is missing.
 
+## Bot permissions required
+
+The bot needs **Administrator** permission in the Discord server (set when adding the bot via OAuth2 or in Server Settings → Roles).
+
+Administrator is required because team channels deny `@everyone ViewChannel`, and Discord blocks channel deletion (even with guild-level `ManageChannels`) when the bot has no explicit `ViewChannel` overwrite on that specific channel. Administrator bypasses all channel overwrites.
+
+Individual permissions used (all covered by Administrator):
+
+| Permission | Used by |
+|---|---|
+| `Administrator` | everything — bypasses channel-level `ViewChannel` denies |
+| `Kick Members` | `cleanup.js` — expels non-Docentes members |
+| `Manage Roles` | `cleanup.js`, `setup.js` — deletes/creates team roles |
+| `Manage Channels` | `cleanup.js`, `setup.js` — deletes/creates channels and categories |
+| `Send Messages` | `cleanup.js` — sends the lobby welcome message |
+| `Pin Messages` | `cleanup.js` — pins the welcome message in lobby |
+
 ## Key conventions
 
 - Both scripts call `require('dotenv').config()` at the top — `lib/discord.js` does not (library modules don't load env).

@@ -16,7 +16,7 @@ async function main() {
   client = c;
   const members = [...guild.members.cache.values()];
 
-  const missingPerms = checkBotPermissions(guild, ['ManageRoles', 'ManageChannels']);
+  const missingPerms = checkBotPermissions(guild, ['Administrator']);
   if (missingPerms.length > 0) {
     console.error(`El bot no tiene los permisos necesarios: ${missingPerms.join(', ')}`);
     client.destroy();
@@ -58,7 +58,7 @@ async function main() {
     default: 'text',
   });
 
-  const firstName = docente.displayName.split(' ')[0];
+  const firstName = docente.displayName.split(' ')[0].toLowerCase();
   const categoryName = `${course}-${firstName}`;
   const teamNames = Array.from({ length: teamCount }, (_, i) => `equipo-${i + 1}`);
   const teamChannelNames = teamNames;
@@ -96,7 +96,6 @@ async function main() {
     type: ChannelType.GuildCategory,
     permissionOverwrites: [
       { id: everyoneRole.id, deny: [PermissionsBitField.Flags.ViewChannel] },
-      { id: guild.members.me.id, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.ManageChannels] },
       ...(docentesRole ? [{ id: docentesRole.id, allow: [PermissionsBitField.Flags.ViewChannel] }] : []),
     ],
   });
