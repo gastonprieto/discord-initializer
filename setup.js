@@ -3,6 +3,7 @@ const { select, number } = require('@inquirer/prompts');
 const { ChannelType, PermissionsBitField } = require('discord.js');
 const { connectAndFetch, getDocentes } = require('./lib/discord');
 const { checkBotPermissions } = require('./lib/permissions');
+const { debug } = require('./lib/debug');
 
 const isDryRun = process.argv.includes('--dry-run');
 
@@ -80,12 +81,15 @@ async function main() {
   // Create team roles
   const createdRoles = {};
   for (const teamName of teamNames) {
+    debug(`Creando rol ${teamName}...`);
     const role = await guild.roles.create({ name: teamName });
     createdRoles[teamName] = role;
+    debug(`Rol creado con id ${role.id}`);
     console.log(`Rol creado: ${teamName}`);
   }
 
   // Create category — deny @everyone VIEW_CHANNEL so team channels are private by default
+  debug(`Creando categoría ${categoryName}...`);
   const category = await guild.channels.create({
     name: categoryName,
     type: ChannelType.GuildCategory,
@@ -94,6 +98,7 @@ async function main() {
       ...(docentesRole ? [{ id: docentesRole.id, allow: [PermissionsBitField.Flags.ViewChannel] }] : []),
     ],
   });
+  debug(`Categoría creada con id ${category.id}`);
   console.log(`Categoría creada: ${categoryName}`);
 
   // Create team channels
@@ -105,6 +110,7 @@ async function main() {
     ];
 
     if (channelType === 'text' || channelType === 'both') {
+      debug(`Creando canal de texto ${teamChannelNames[i]}...`);
       await guild.channels.create({
         name: teamChannelNames[i],
         type: ChannelType.GuildText,
@@ -115,6 +121,7 @@ async function main() {
     }
 
     if (channelType === 'voice' || channelType === 'both') {
+      debug(`Creando canal de voz ${teamChannelNames[i]}...`);
       await guild.channels.create({
         name: teamChannelNames[i],
         type: ChannelType.GuildVoice,

@@ -3,6 +3,7 @@ const { confirm } = require('@inquirer/prompts');
 const { ChannelType } = require('discord.js');
 const { connectAndFetch, getMembersToKick, getRolesToDelete, getChannelsToDelete } = require('./lib/discord');
 const { checkBotPermissions } = require('./lib/permissions');
+const { debug } = require('./lib/debug');
 
 const isDryRun = process.argv.includes('--dry-run');
 
@@ -48,6 +49,7 @@ async function main() {
 
   for (const member of toKick) {
     try {
+      debug(`Expulsando ${member.displayName} (${member.id})...`);
       await member.kick('Reinicio de cuatrimestre');
       console.log(`Expulsado: ${member.displayName}`);
     } catch (err) {
@@ -57,6 +59,7 @@ async function main() {
 
   for (const channel of toDeleteChannels) {
     try {
+      debug(`Eliminando canal ${channel.name} (${channel.id})...`);
       await channel.delete();
       console.log(`Canal eliminado: ${channel.name}`);
     } catch (err) {
@@ -66,6 +69,7 @@ async function main() {
 
   for (const role of toDeleteRoles) {
     try {
+      debug(`Eliminando rol ${role.name} (${role.id})...`);
       await role.delete();
       console.log(`Rol eliminado: ${role.name}`);
     } catch (err) {
@@ -73,6 +77,7 @@ async function main() {
     }
   }
 
+  debug('Creando canal lobby...');
   await guild.channels.create({
     name: 'lobby',
     type: ChannelType.GuildText,
