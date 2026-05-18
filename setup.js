@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { select, number } = require('@inquirer/prompts');
+const { select, input } = require('@inquirer/prompts');
 const { ChannelType, PermissionsBitField } = require('discord.js');
 const { connectAndFetch, getDocentes } = require('./lib/discord');
 const { checkBotPermissions } = require('./lib/permissions');
@@ -43,10 +43,12 @@ async function main() {
     choices: docentes.map(m => ({ name: m.displayName, value: m })),
   });
 
-  const teamCount = await number({
-    message: '¿Cuántos equipos tendrá la materia?',
-    min: 1,
+  const teamNumbersRaw = await input({
+    message: '¿Qué números de equipo crear? (separados por coma, ej: 1, 3, 5)',
+    validate: v => /^[\d\s,]+$/.test(v) && v.trim().length > 0 || 'Ingresá números separados por coma',
   });
+
+  const teamNumbers = teamNumbersRaw.split(',').map(s => parseInt(s.trim(), 10)).filter(n => !isNaN(n));
 
   const channelType = await select({
     message: '¿Qué tipo de canales crear para los equipos?',
@@ -60,7 +62,7 @@ async function main() {
 
   const firstName = docente.displayName.split(' ')[0].toLowerCase();
   const categoryName = `${course}-${firstName}`;
-  const teamNames = Array.from({ length: teamCount }, (_, i) => `equipo-${i + 1}`);
+  const teamNames = teamNumbers.map(n => `equipo-${n}`);
   const teamChannelNames = teamNames;
 
   console.log(`\nSe creará la siguiente estructura:`);
@@ -103,7 +105,7 @@ async function main() {
   console.log(`Categoría creada: ${categoryName}`);
 
   // Create team channels
-  for (let i = 0; i < teamCount; i++) {
+  for (let i = 0; i < teamNames.length; i++) {
     const teamRole = createdRoles[teamNames[i]];
     const overwrites = [
       { id: everyoneRole.id, deny: [PermissionsBitField.Flags.ViewChannel] },
