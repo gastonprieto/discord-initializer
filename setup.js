@@ -62,7 +62,7 @@ async function main() {
 
   const firstName = docente.displayName.split(' ')[0].toLowerCase();
   const categoryName = `${course}-${firstName}`;
-  const teamNames = teamNumbers.map(n => `equipo-${n}`);
+  const teamNames = teamNumbers.map(n => `${course}-equipo-${n}`);
   const teamChannelNames = teamNames;
 
   console.log(`\nSe creará la siguiente estructura:`);
