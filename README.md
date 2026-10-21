@@ -26,10 +26,15 @@ Ninguno queda corriendo como bot: se conectan, hacen su trabajo y terminan.
 
 ### 2. Agregar el bot al servidor
 
-1. En el Developer Portal, entrá a **OAuth2** → **URL Generator**.
-2. En **Scopes**, marcá `bot`.
-3. En **Bot Permissions**, marcá `Administrator`.
-4. Copiá la URL generada al pie de la página, abrila en el navegador, elegí el servidor y autorizá.
+1. En el Developer Portal, entrá a **Installation** en el menú de la izquierda.
+2. En **Installation Contexts**, dejá marcado **Guild Install** (User Install no hace falta).
+3. En **Install Link**, elegí **Discord Provided Link**.
+4. En **Default Install Settings** → **Guild Install**, agregá el scope `bot` y, en **Permissions**, elegí `Administrator`. Guardá los cambios.
+5. Copiá la URL de **Install Link**, abrila en el navegador, elegí **Add to server**, seleccioná el servidor y autorizá.
+
+Para agregar un bot a un servidor necesitás el permiso **Manage Server** en ese servidor.
+
+> Alternativa: en **OAuth2** → **URL Generator** podés marcar el scope `bot` y el permiso `Administrator`, y usar la URL que se genera al pie de la página.
 
 ### 3. Configurar los roles en el servidor
 
