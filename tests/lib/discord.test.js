@@ -1,4 +1,4 @@
-const { getDocentes, getMembersToKick, getRolesToDelete, getChannelsToDelete, getCategories, getCategoryChannels, getCategoryRoles } = require('../../lib/discord');
+const { getDocentes, getMembersToKick, getRolesToDelete, getChannelsToDelete, getCategories, getCategoryChannels, getCategoryRoles, getCategoryMembersToKick } = require('../../lib/discord');
 
 describe('getDocentes', () => {
   it('returns members who have the Docentes role', () => {
@@ -131,5 +131,34 @@ describe('getCategoryRoles', () => {
       channels: { cache: new Map(channels.map(c => [c.id, c])) },
     };
     expect(getCategoryRoles(guild, 'cat').map(r => r.id).sort()).toEqual(['eq1', 'eq2']);
+  });
+});
+
+describe('getCategoryMembersToKick', () => {
+  const member = (id, roleIds, bot = false) => ({
+    id, displayName: id, user: { bot }, roles: { cache: new Map(roleIds.map(r => [r, { id: r }])) },
+  });
+
+  it('kicks members with a category role, keeping Docentes, bots and members with other team roles', () => {
+    const roles = [
+      { id: 'doc', name: 'Docentes', managed: false },
+      { id: 'eq1', name: 'diseño-equipo-1', managed: false },
+      { id: 'eq2', name: 'diseño-equipo-2', managed: false },
+      { id: 'dev1', name: 'desarrollo-equipo-1', managed: false },
+    ];
+    const guild = { roles: { cache: new Map(roles.map(r => [r.id, r])) } };
+    const members = [
+      member('alumno1', ['eq1']),
+      member('alumno2', ['eq2']),
+      member('ambas', ['eq1', 'dev1']),
+      member('otra', ['dev1']),
+      member('sinRol', []),
+      member('docente', ['doc', 'eq1']),
+      member('bot', ['eq1'], true),
+    ];
+    const categoryRoles = [roles[1], roles[2]];
+    const result = getCategoryMembersToKick(guild, members, categoryRoles);
+    expect(result.toKick.map(m => m.id)).toEqual(['alumno1', 'alumno2']);
+    expect(result.kept.map(m => m.id)).toEqual(['ambas']);
   });
 });

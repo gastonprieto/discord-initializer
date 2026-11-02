@@ -146,9 +146,14 @@ El script te deja elegir una categoría y borra:
 - Todos los canales de esa categoría y la categoría misma.
 - Los roles que dan acceso a esos canales (por ejemplo `diseño-equipo-N`). No borra `@everyone`, `Docentes`, los roles de integraciones ni los roles que también se usan en canales de otras categorías.
 
-No expulsa a nadie: los alumnos se quedan en el servidor, pero sin el rol de equipo.
+También expulsa a los miembros que tienen alguno de esos roles, salvo:
 
-Después corré `npm run setup` para crear los grupos nuevos y volvé a asignarles a los alumnos el rol de su equipo.
+- Los `Docentes` y los bots.
+- Los alumnos que también tienen un rol de equipo de otra categoría (por ejemplo, alguien que cursa las dos materias). El script los lista aparte y les saca solo el rol de esta categoría, al borrarlo.
+
+Los miembros sin ningún rol de equipo (por ejemplo, los que todavía están esperando en `lobby`) no se expulsan.
+
+Después corré `npm run setup` para crear los grupos nuevos.
 
 ## Debug
 

@@ -22,7 +22,7 @@ Three standalone CLI scripts share a common library. None runs as a persistent b
 
 **`setup.js`** — Script 2. Interactive wizard that creates the course structure: a category named `{course}-{teacherName}`, a public `lobby` text channel, and one channel per team (`equipo-1`, `equipo-2`, …) visible only to that team's role. Fetches available teachers directly from Discord members who have the `Docentes` role.
 
-**`delete-category.js`** — Script 3. Lets you pick one category and deletes its channels, the category itself, and the roles with overwrites on those channels (skipping protected roles and roles also used outside the category). Does not kick members.
+**`delete-category.js`** — Script 3. Lets you pick one category and deletes its channels, the category itself, and the roles with overwrites on those channels (skipping protected roles and roles also used outside the category). Kicks members holding those roles, except Docentes, bots, and members who also hold another team role.
 
 **`lib/discord.js`** — Shared helpers. `connectAndFetch()` handles login + guild member fetch. Filter functions (`getMembersToKick`, `getRolesToDelete`, `getChannelsToDelete`) are pure and tested with mock guild objects. `getChannelsToDelete` excludes Discord system/rules/community channels that the API won't allow deleting.
 

@@ -1,6 +1,6 @@
 require('dotenv').config();
 const { select, confirm } = require('@inquirer/prompts');
-const { connectAndFetch, getCategories, getCategoryChannels, getCategoryRoles } = require('./lib/discord');
+const { connectAndFetch, getCategories, getCategoryChannels, getCategoryRoles, getCategoryMembersToKick } = require('./lib/discord');
 const { checkBotPermissions } = require('./lib/permissions');
 const { debug } = require('./lib/debug');
 
@@ -13,6 +13,7 @@ async function main() {
 
   const { client: c, guild } = await connectAndFetch();
   client = c;
+  const members = [...guild.members.cache.values()];
 
   const missingPerms = checkBotPermissions(guild, ['Administrator']);
   if (missingPerms.length > 0) {
@@ -35,13 +36,19 @@ async function main() {
 
   const channels = getCategoryChannels(guild, category.id);
   const roles = getCategoryRoles(guild, category.id);
+  const { toKick, kept } = getCategoryMembersToKick(guild, members, roles);
 
   console.log(`\nCategoría a eliminar: ${category.name}`);
   console.log(`Canales a eliminar: ${channels.length}`);
   channels.forEach(ch => console.log(`  - ${ch.name}`));
   console.log(`Roles a eliminar: ${roles.length}`);
   roles.forEach(r => console.log(`  - ${r.name}`));
-  console.log('No se expulsa a ningún miembro.');
+  console.log(`Miembros a expulsar: ${toKick.length}`);
+  toKick.forEach(m => console.log(`  - ${m.displayName}`));
+  if (kept.length > 0) {
+    console.log(`Miembros que no se expulsan porque tienen equipo en otra categoría: ${kept.length}`);
+    kept.forEach(m => console.log(`  - ${m.displayName}`));
+  }
 
   if (isDryRun) {
     client.destroy();
@@ -53,6 +60,16 @@ async function main() {
     console.log('Cancelado.');
     client.destroy();
     return;
+  }
+
+  for (const member of toKick) {
+    try {
+      debug(`Expulsando ${member.displayName} (${member.id})...`);
+      await member.kick(`Borrado de la categoría ${category.name}`);
+      console.log(`Expulsado: ${member.displayName}`);
+    } catch (err) {
+      console.error(`Error al expulsar ${member.displayName}: ${err.message}`);
+    }
   }
 
   for (const channel of [...channels, category]) {
