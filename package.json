@@ -5,6 +5,7 @@
   "scripts": {
     "cleanup": "node cleanup.js",
     "setup": "node setup.js",
+    "delete-category": "node delete-category.js",
     "test": "jest"
   },
   "dependencies": {

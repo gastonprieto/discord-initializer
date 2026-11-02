@@ -1,4 +1,4 @@
-const { getDocentes, getMembersToKick, getRolesToDelete, getChannelsToDelete } = require('../../lib/discord');
+const { getDocentes, getMembersToKick, getRolesToDelete, getChannelsToDelete, getCategories, getCategoryChannels, getCategoryRoles } = require('../../lib/discord');
 
 describe('getDocentes', () => {
   it('returns members who have the Docentes role', () => {
@@ -81,5 +81,55 @@ describe('getChannelsToDelete', () => {
     const result = getChannelsToDelete(guild);
     expect(result).toHaveLength(1);
     expect(result[0].id).toBe('1');
+  });
+});
+
+describe('getCategories', () => {
+  it('returns only category channels', () => {
+    const channels = [
+      { id: '1', name: 'lobby', type: 0 },
+      { id: '2', name: 'diseño-juan', type: 4 },
+    ];
+    const guild = { channels: { cache: new Map(channels.map(c => [c.id, c])) } };
+    expect(getCategories(guild).map(c => c.id)).toEqual(['2']);
+  });
+});
+
+describe('getCategoryChannels', () => {
+  it('returns channels whose parent is the category', () => {
+    const channels = [
+      { id: 'cat', name: 'diseño-juan', type: 4, parentId: null },
+      { id: '1', name: 'diseño-equipo-1', type: 0, parentId: 'cat' },
+      { id: '2', name: 'lobby', type: 0, parentId: null },
+      { id: '3', name: 'desarrollo-equipo-1', type: 0, parentId: 'other' },
+    ];
+    const guild = { channels: { cache: new Map(channels.map(c => [c.id, c])) } };
+    expect(getCategoryChannels(guild, 'cat').map(c => c.id)).toEqual(['1']);
+  });
+});
+
+describe('getCategoryRoles', () => {
+  const overwrites = ids => ({ cache: new Map(ids.map(id => [id, { id, type: 0 }])) });
+
+  it('returns roles with overwrites on the category channels, excluding protected and shared roles', () => {
+    const roles = [
+      { id: 'everyone', name: '@everyone', managed: false },
+      { id: 'doc', name: 'Docentes', managed: false },
+      { id: 'eq1', name: 'diseño-equipo-1', managed: false },
+      { id: 'eq2', name: 'diseño-equipo-2', managed: false },
+      { id: 'shared', name: 'Ayudantes', managed: false },
+      { id: 'bot', name: 'BotRole', managed: true },
+    ];
+    const channels = [
+      { id: 'cat', type: 4, parentId: null, permissionOverwrites: overwrites(['everyone', 'doc']) },
+      { id: '1', type: 0, parentId: 'cat', permissionOverwrites: overwrites(['everyone', 'eq1', 'shared', 'bot']) },
+      { id: '2', type: 0, parentId: 'cat', permissionOverwrites: overwrites(['everyone', 'eq2']) },
+      { id: '3', type: 0, parentId: 'other', permissionOverwrites: overwrites(['everyone', 'shared']) },
+    ];
+    const guild = {
+      roles: { cache: new Map(roles.map(r => [r.id, r])) },
+      channels: { cache: new Map(channels.map(c => [c.id, c])) },
+    };
+    expect(getCategoryRoles(guild, 'cat').map(r => r.id).sort()).toEqual(['eq1', 'eq2']);
   });
 });

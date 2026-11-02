@@ -132,12 +132,23 @@ npm run cleanup
 npm run setup        # una vez por materia
 ```
 
-## Cambiar algunos grupos a mitad de cursada
+## Rehacer los grupos de una materia (`delete-category.js`)
 
-Los scripts no permiten borrar equipos puntuales. Además, `setup.js` siempre crea una categoría nueva, así que si ya existe vas a tener dos con el mismo nombre. Para eso:
+Para borrar los grupos de una sola categoría sin tocar el resto del servidor:
 
-1. Borrá a mano en Discord los canales y roles `{materia}-equipo-N` que ya no sirvan.
-2. Creá los nuevos a mano, o corré `npm run setup` con los números nuevos, mové los canales a la categoría original y borrá la categoría duplicada.
+```bash
+node delete-category.js --dry-run   # vista previa
+npm run delete-category             # ejecuta (pide confirmación)
+```
+
+El script te deja elegir una categoría y borra:
+
+- Todos los canales de esa categoría y la categoría misma.
+- Los roles que dan acceso a esos canales (por ejemplo `diseño-equipo-N`). No borra `@everyone`, `Docentes`, los roles de integraciones ni los roles que también se usan en canales de otras categorías.
+
+No expulsa a nadie: los alumnos se quedan en el servidor, pero sin el rol de equipo.
+
+Después corré `npm run setup` para crear los grupos nuevos y volvé a asignarles a los alumnos el rol de su equipo.
 
 ## Debug
 
